@@ -1,16 +1,10 @@
 from collections import deque
 
-LBRACKET = "("
-RBRACKET = ")"
-PLUS = "+"
-MINUS = "-"
-MUL = "*"
-DIV = "/"
-EXP = "^"
-MOD = "%"
-END = "#"
-OPERATORS = (LBRACKET, RBRACKET, PLUS, MINUS, MUL, DIV, EXP, MOD)
-TABLE = {
+from operators import *
+from expression import Expression
+
+
+CONTROL_TABLE = {
     END: {
         END: "6",
         LBRACKET: "5",
@@ -104,63 +98,6 @@ TABLE = {
 }
 
 
-class Expression:
-    """
-    Validation guarantees:
-        - expression has only digits and `OPERATORS`;
-        - expression doesn't have numbers with 2 dots;
-        - every single element either number or operator.
-
-        add:
-        - `234(`
-        - `1+(+3)`
-    """
-
-    def __init__(self, expression: str):
-        self.value = []
-        self.is_valid = True
-        self._num_builder = []
-        self._parse(expression)
-
-    def _parse(self, expression):
-        expression = expression.replace(" ", "")
-        for symbol in expression:
-            self.add(symbol)
-        self.add("#")
-
-    def _build_number(self):
-        if not self._num_builder:
-            return
-        number = "".join(self._num_builder)
-        if number.count(".") > 1:
-            self.is_valid = False
-        number = number.lstrip("0")
-        number = number if number[0] != "." else "0" + number
-        self.value.append(number)
-        self._num_builder = []
-
-    def add(self, symbol):
-
-        if symbol in OPERATORS and not self._num_builder:
-            self.value.append(symbol)
-
-        elif symbol in OPERATORS and self._num_builder:
-            self._build_number()
-            self.value.append(symbol)
-
-        elif symbol.isdigit() or symbol == ".":
-            self._num_builder.append(symbol)
-
-        elif symbol == END:
-            self._build_number()
-
-        else:
-            self.is_valid = False
-
-    def __str__(self):
-        return " ".join(self.value)
-
-
 class Calculator:
     def __init__(self):
         self.expression = None
@@ -189,7 +126,7 @@ class Calculator:
                 self.pointer += 1
                 continue
             print(token, self.postfix, self.opr_stack)
-            operation_code = TABLE[token][self.opr_stack[-1]]
+            operation_code = CONTROL_TABLE[token][self.opr_stack[-1]]
             if self.operate(operation_code, token):
                 break
 
@@ -211,7 +148,6 @@ class Calculator:
 
     def oper4(self, token):
         self.postfix.append(self.opr_stack.pop())
-        # self.opr_stack.pop()
         return False
 
     def oper5(self, token):

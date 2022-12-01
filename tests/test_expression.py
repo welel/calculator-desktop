@@ -115,3 +115,9 @@ def test_invalid_sequence6():
     se = "10(31+21)"
     with pytest.raises(ValueError):
         Expression(se)
+
+
+def test_invalid_sequence7():
+    se = "a"
+    with pytest.raises(ValueError):
+        Expression(se)

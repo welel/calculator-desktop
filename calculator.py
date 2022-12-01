@@ -98,23 +98,25 @@ CONTROL_TABLE = {
 }
 
 
-class Calculator:
+class PostfixTranslator:
     def __init__(self):
-        self.expression = None
-        self.postfix = []
         self.num_stack = deque(END)
         self.opr_stack = deque(END)
+        self.postfix = []
+        self.expression = None
         self.pointer = 0
-        self.error = ""
+        super().__init__()
 
-    def clear(self):
+    def _clear(self):
         self.__init__()
 
     def set_expression(self, expression: Expression):
-        self.clear()
+        self._clear()
         self.expression = expression
 
     def make_postfix(self):
+        self.postfix = []
+        self.pointer = 0
         if not self.expression:
             return
         expression = self.expression.value
@@ -125,10 +127,11 @@ class Calculator:
                 self.postfix.append(token)
                 self.pointer += 1
                 continue
-            print(token, self.postfix, self.opr_stack)
             operation_code = CONTROL_TABLE[token][self.opr_stack[-1]]
             if self.operate(operation_code, token):
                 break
+        self.num_stack = deque(END)
+        self.opr_stack = deque(END)
 
     def oper1(self, token):
         self.opr_stack.append(token)
@@ -151,11 +154,9 @@ class Calculator:
         return False
 
     def oper5(self, token):
-        self.error = f"Translation erorr on `{token}` token."
-        return True
+        raise ValueError(f"Translation erorr on `{token}` token.")
 
     def oper6(self, token):
-        print("END")
         return True
 
     def operate(self, code, token):
@@ -171,13 +172,65 @@ class Calculator:
         return operation_function(token)
 
     def __str__(self):
-        return "\n".join(
-            [
-                str(self.expression),
-                str(self.postfix),
-                str(self.num_stack),
-                str(self.opr_stack),
-                str(self.pointer),
-                str(self.error),
-            ]
+        return " ".join(self.postfix)
+
+    def __repr__(self):
+        return str(
+            "Expression:", self.expression, "|", "Postfix:", self.postfix
         )
+
+
+class Calculator(PostfixTranslator):
+    def __init__(self):
+        self.result = 0
+        super().__init__()
+
+    def _prepare_postfix(self):
+        if not self.postfix:
+            self.result = 0
+            return
+        self.postfix.append(END)
+
+    def clear(self):
+        self.result = 0
+        self.num_stack = deque(END)
+        self.opr_stack = deque(END)
+
+    def _calc_result(self, left, right, operator):
+        left = float(left)
+        right = float(right)
+        if operator == PLUS:
+            return left + right
+        elif operator == MINUS:
+            return left - right
+        elif operator == MUL:
+            return left * right
+        elif operator == DIV:
+            return left / right
+        elif operator == EXP:
+            return left**right
+        elif operator == MOD:
+            return left % right
+        else:
+            raise ValueError(f"Wrong operator - `{operator}`.")
+
+    def calculate(self):
+        self._prepare_postfix()
+        self.clear()
+        postfix = self.postfix
+        for token in postfix:
+
+            if token[0].isdigit():
+                self.num_stack.append(token)
+
+            elif token != END:
+                right = self.num_stack.pop()
+                left = self.num_stack.pop()
+                res = self._calc_result(left, right, token)
+                self.num_stack.append(res)
+
+            elif token == END:
+                self.result = float(self.num_stack.pop())
+
+            else:
+                raise ValueError(f"Wrong token - `{token}`.")

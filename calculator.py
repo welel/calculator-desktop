@@ -4,6 +4,8 @@ from operators import *
 from expression import Expression
 
 
+# Control table for postfix translation algorithm
+# See readable version in README.md
 CONTROL_TABLE = {
     END: {
         END: "6",
@@ -99,13 +101,36 @@ CONTROL_TABLE = {
 
 
 class PostfixTranslator:
+    """Translate infix math expression to postfix notation.
+
+    Calculations of a math expression use the postfix notation. This class
+    translates an infix math expression to postfix. The control table set
+    rules of translation. Translation uses 2 stacks, pointer and puts
+    the result postfix expression in `postfix`.
+    More about postfix notation: https://www.cs.man.ac.uk/~pjj/cs212/fix.html
+
+    Example:
+        infix: (A+B)*C-D
+        postfix: AB+C*D-
+
+    Attrs:
+        num_stack: stores numbers while translation.
+        opr_stack: stores operators while translation.
+        postfix: the result postfix expression.
+        expression: an `Expression` instance (input infix math expression).
+        pointer: pointer (index number) to an expression.
+
+    Raises:
+        ValueError: bad sequence (the control table decides).
+
+    """
+
     def __init__(self):
-        self.num_stack = deque(END)
-        self.opr_stack = deque(END)
-        self.postfix = []
-        self.expression = None
-        self.pointer = 0
-        super().__init__()
+        self.num_stack: deque = deque(END)
+        self.opr_stack: deque = deque(END)
+        self.postfix: list = []
+        self.expression: Exception = None
+        self.pointer: int = 0
 
     def _clear(self):
         self.__init__()
@@ -115,6 +140,7 @@ class PostfixTranslator:
         self.expression = expression
 
     def make_postfix(self):
+        """Translate `expression` to `postfix`."""
         self.postfix = []
         self.pointer = 0
         if not self.expression:
@@ -181,6 +207,13 @@ class PostfixTranslator:
 
 
 class Calculator(PostfixTranslator):
+    """Calculate result based on translated postfix expression.
+
+    Calculation uses `num_stuck` and `postfix` and puts the result in `result`.
+
+    TODO: fix: (9/(5+4)
+    """
+
     def __init__(self):
         self.result = 0
         super().__init__()
@@ -194,7 +227,6 @@ class Calculator(PostfixTranslator):
     def clear(self):
         self.result = 0
         self.num_stack = deque(END)
-        self.opr_stack = deque(END)
 
     def _calc_result(self, left, right, operator):
         left = float(left)
@@ -234,3 +266,6 @@ class Calculator(PostfixTranslator):
 
             else:
                 raise ValueError(f"Wrong token - `{token}`.")
+
+    def get_result(self):
+        return self.result

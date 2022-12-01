@@ -39,8 +39,8 @@ class Expression:
         number = "".join(self._num_builder)
         if number.count(".") > 1:
             raise ValueError("Number has more that one dot.")
-
-        number = number.lstrip("0").rstrip(".")
+        if number != '0':
+            number = number.lstrip("0").rstrip(".")
         number = number if number[0] != "." else "0" + number
 
         if self.value[-1] == RBRACKET:

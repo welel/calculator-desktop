@@ -80,6 +80,11 @@ def test_valid_sequence11():
     expression = Expression(se)
     assert str(expression) == "1533+(0.42424/2)"
 
+def test_valid_sequence12():
+    se = "0"
+    expression = Expression(se)
+    assert str(expression) == "0"
+
 
 def test_invalid_sequence1():
     se = "*10+2"

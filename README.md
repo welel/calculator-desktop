@@ -1,1 +1,1 @@
-# gui-calculator-desktop
+# calculator-desktop

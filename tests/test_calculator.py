@@ -133,7 +133,7 @@ class TestCalculation:
         calc.set_expression(Expression(se))
         calc.make_postfix()
         calc.calculate()
-        assert calc.result == 1
+        assert calc.get_result() == 1
 
     def test_calculation4(self):
         se = "(3-1)*2"

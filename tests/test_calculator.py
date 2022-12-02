@@ -149,4 +149,4 @@ class TestCalculation:
         calc.set_expression(Expression(se))
         calc.make_postfix()
         calc.calculate()
-        assert pytest.approx(calc.result, 0.0001) == 0.8333
+        assert pytest.approx(float(calc.result), 0.0001) == 0.8333

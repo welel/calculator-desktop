@@ -15,25 +15,25 @@ class CalculatorWindow(QMainWindow):
         self.ui.setupUi(self)
 
         # Input buttons events
-        self.ui.btn_0.clicked.connect(lambda: self.add_digit("0"))
-        self.ui.btn_1.clicked.connect(lambda: self.add_digit("1"))
-        self.ui.btn_2.clicked.connect(lambda: self.add_digit("2"))
-        self.ui.btn_3.clicked.connect(lambda: self.add_digit("3"))
-        self.ui.btn_4.clicked.connect(lambda: self.add_digit("4"))
-        self.ui.btn_5.clicked.connect(lambda: self.add_digit("5"))
-        self.ui.btn_6.clicked.connect(lambda: self.add_digit("6"))
-        self.ui.btn_7.clicked.connect(lambda: self.add_digit("7"))
-        self.ui.btn_8.clicked.connect(lambda: self.add_digit("8"))
-        self.ui.btn_9.clicked.connect(lambda: self.add_digit("9"))
-        self.ui.btn_lbracket.clicked.connect(lambda: self.add_digit(LBRACKET))
-        self.ui.btn_rbracket.clicked.connect(lambda: self.add_digit(RBRACKET))
-        self.ui.btn_dot.clicked.connect(lambda: self.add_digit("."))
-        self.ui.btn_plus.clicked.connect(lambda: self.add_digit(PLUS))
-        self.ui.btn_minus.clicked.connect(lambda: self.add_digit(MINUS))
-        self.ui.btn_mul.clicked.connect(lambda: self.add_digit(MUL))
-        self.ui.btn_div.clicked.connect(lambda: self.add_digit(DIV))
-        self.ui.btn_exp.clicked.connect(lambda: self.add_digit(EXP))
-        self.ui.btn_mod.clicked.connect(lambda: self.add_digit(MOD))
+        self.ui.btn_0.clicked.connect(lambda: self.add_symbol("0"))
+        self.ui.btn_1.clicked.connect(lambda: self.add_symbol("1"))
+        self.ui.btn_2.clicked.connect(lambda: self.add_symbol("2"))
+        self.ui.btn_3.clicked.connect(lambda: self.add_symbol("3"))
+        self.ui.btn_4.clicked.connect(lambda: self.add_symbol("4"))
+        self.ui.btn_5.clicked.connect(lambda: self.add_symbol("5"))
+        self.ui.btn_6.clicked.connect(lambda: self.add_symbol("6"))
+        self.ui.btn_7.clicked.connect(lambda: self.add_symbol("7"))
+        self.ui.btn_8.clicked.connect(lambda: self.add_symbol("8"))
+        self.ui.btn_9.clicked.connect(lambda: self.add_symbol("9"))
+        self.ui.btn_lbracket.clicked.connect(lambda: self.add_symbol(LBRACKET))
+        self.ui.btn_rbracket.clicked.connect(lambda: self.add_symbol(RBRACKET))
+        self.ui.btn_dot.clicked.connect(lambda: self.add_symbol("."))
+        self.ui.btn_plus.clicked.connect(lambda: self.add_symbol(PLUS))
+        self.ui.btn_minus.clicked.connect(lambda: self.add_symbol(MINUS))
+        self.ui.btn_mul.clicked.connect(lambda: self.add_symbol(MUL))
+        self.ui.btn_div.clicked.connect(lambda: self.add_symbol(DIV))
+        self.ui.btn_exp.clicked.connect(lambda: self.add_symbol(EXP))
+        self.ui.btn_mod.clicked.connect(lambda: self.add_symbol(MOD))
 
         # Control button events
         self.ui.btn_escape.clicked.connect(self.escape)
@@ -43,10 +43,11 @@ class CalculatorWindow(QMainWindow):
         # Calculator objects
         self.calc = Calculator()
 
-    def add_digit(self, btn_text: str) -> None:
+    def add_symbol(self, btn_text: str) -> None:
+        """Add a symbol (digit/operator) to the input edit line."""
         cur_pos = self.ui.le_input.cursorPosition()
         input_text = self.ui.le_input.text()
-        if input_text == "0":
+        if input_text == "0" and btn_text != ".":
             self.ui.le_input.setText(btn_text)
         else:
             self.ui.le_input.setText(
@@ -56,6 +57,7 @@ class CalculatorWindow(QMainWindow):
             self.ui.le_input.setFocus()
 
     def escape(self):
+        """Delete a symbol of the edit line."""
         cur_pos = self.ui.le_input.cursorPosition() - 1
         input_text = self.ui.le_input.text()
         if len(input_text) == 1:
@@ -72,6 +74,7 @@ class CalculatorWindow(QMainWindow):
         self.ui.lbl_output.clear()
 
     def caluculate(self):
+        """Calculate expression from the edit line, put result in the output."""
         inp = self.ui.le_input.text()
         try:
             expression = Expression(inp)

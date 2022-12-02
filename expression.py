@@ -39,7 +39,7 @@ class Expression:
         number = "".join(self._num_builder)
         if number.count(".") > 1:
             raise ValueError("Number has more that one dot.")
-        if number != '0':
+        if number != "0":
             number = number.lstrip("0").rstrip(".")
         number = number if number[0] != "." else "0" + number
 

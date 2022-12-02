@@ -1,4 +1,5 @@
 from collections import deque
+from decimal import Decimal
 
 from operators import *
 from expression import Expression
@@ -105,8 +106,9 @@ class PostfixTranslator:
 
     Calculations of a math expression use the postfix notation. This class
     translates an infix math expression to postfix. The control table set
-    rules of translation. Translation uses 2 stacks, pointer and puts
-    the result postfix expression in `postfix`.
+    rules of translation. Translation chooses operation functions by the table
+    (`oper[n]`). Translation uses 2 stacks, pointer and puts the result postfix
+    expression in `postfix`.
     More about postfix notation: https://www.cs.man.ac.uk/~pjj/cs212/fix.html
 
     Example:
@@ -153,39 +155,51 @@ class PostfixTranslator:
                 self.postfix.append(token)
                 self.pointer += 1
                 continue
+            # Choose an operation
             operation_code = CONTROL_TABLE[token][self.opr_stack[-1]]
+            # Run operation (end of transltaion returns True)
             if self.operate(operation_code, token):
                 break
         self.num_stack = deque(END)
         self.opr_stack = deque(END)
 
-    def oper1(self, token):
+    def oper1(self, token: str) -> bool:
         self.opr_stack.append(token)
         self.pointer += 1
         return False
 
-    def oper2(self, token):
+    def oper2(self, token: str) -> bool:
         self.postfix.append(self.opr_stack.pop())
         self.opr_stack.append(token)
         self.pointer += 1
         return False
 
-    def oper3(self, token):
+    def oper3(self, token: str) -> bool:
         self.opr_stack.pop()
         self.pointer += 1
         return False
 
-    def oper4(self, token):
+    def oper4(self, token: str) -> bool:
         self.postfix.append(self.opr_stack.pop())
         return False
 
-    def oper5(self, token):
+    def oper5(self, token: str):
         raise ValueError(f"Translation erorr on `{token}` token.")
 
-    def oper6(self, token):
+    def oper6(self, token: str) -> bool:
+        """End translation."""
         return True
 
-    def operate(self, code, token):
+    def operate(self, code: str, token: str) -> bool:
+        """Choose an operation function by the operation code.
+
+        Args:
+            code: a code of a operation function.
+            token: a expression token (digit/operator/sys symbol).
+        Returns:
+            Result of an operation function. The `end` operation function
+            returns True, rest of them resturn False.
+        """
         operation_map = {
             "1": self.oper1,
             "2": self.oper2,
@@ -228,9 +242,9 @@ class Calculator(PostfixTranslator):
         self.result = 0
         self.num_stack = deque(END)
 
-    def _calc_result(self, left, right, operator):
-        left = float(left)
-        right = float(right)
+    def _calc_result(self, left: str, right: str, operator: str) -> Decimal:
+        left = Decimal(left)
+        right = Decimal(right)
         if operator == PLUS:
             return left + right
         elif operator == MINUS:
@@ -262,10 +276,10 @@ class Calculator(PostfixTranslator):
                 self.num_stack.append(res)
 
             elif token == END:
-                self.result = float(self.num_stack.pop())
+                self.result = Decimal(self.num_stack.pop())
 
             else:
                 raise ValueError(f"Wrong token - `{token}`.")
 
-    def get_result(self):
+    def get_result(self) -> Decimal:
         return self.result

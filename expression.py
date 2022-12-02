@@ -13,9 +13,8 @@ class Expression:
         ValueError - if validation is failed.
 
     Validation guarantees:
-        - value has only digits and `OPERATORS`;
+        - value has only digits, `OPERATORS`;
         - value doesn't have numbers with 2 dots;
-        - every single element of the value either number or operator;
         - value doesn't start and end with math sign;
         - 2 math signs can't be next to each other.
     """

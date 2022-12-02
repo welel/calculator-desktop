@@ -75,12 +75,13 @@ def test_valid_sequence11():
     assert str(expression) == "1533+(0.42424/2)"
 
 
-def test_valid_sequence11():
+def test_valid_sequence12():
     se = "15   33 + (.42 424 /2)"
     expression = Expression(se)
     assert str(expression) == "1533+(0.42424/2)"
 
-def test_valid_sequence12():
+
+def test_valid_sequence13():
     se = "0"
     expression = Expression(se)
     assert str(expression) == "0"
@@ -126,3 +127,21 @@ def test_invalid_sequence7():
     se = "a"
     with pytest.raises(ValueError):
         Expression(se)
+
+
+def test_invalid_sequence8():
+    se = "(1+1)5"
+    with pytest.raises(ValueError):
+        Expression(se)
+
+
+def test_invalid_sequence9():
+    se = "1+)"
+    with pytest.raises(ValueError):
+        Expression(se)
+
+
+def test_repr():
+    se = "1+1"
+    ex = Expression(se)
+    assert repr(ex) == "['1', '+', '1']"

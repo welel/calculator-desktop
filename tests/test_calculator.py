@@ -102,6 +102,20 @@ class TestTranslation:
         with pytest.raises(ValueError):
             trans.make_postfix()
 
+    def test_str(self):
+        se = "1+1"
+        calc = Calculator()
+        calc.set_expression(Expression(se))
+        calc.make_postfix()
+        assert str(calc) == "1 1 +"
+
+    def test_repr(self):
+        se = "1+1"
+        calc = Calculator()
+        calc.set_expression(Expression(se))
+        calc.make_postfix()
+        assert repr(calc) == "Expression: 1+1# | Postfix: ['1', '1', '+']"
+
 
 class TestCalculation:
     def test_super_method(self):
@@ -150,3 +164,14 @@ class TestCalculation:
         calc.make_postfix()
         calc.calculate()
         assert pytest.approx(float(calc.result), 0.0001) == 0.8333
+
+    def test_no_expressin_postfix(self):
+        calc = Calculator()
+        calc.make_postfix()
+        assert calc.postfix == []
+
+    def test_no_expressin_calculate(self):
+        calc = Calculator()
+        calc.make_postfix()
+        calc.calculate()
+        assert calc.get_result() == 0

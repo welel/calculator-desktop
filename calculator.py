@@ -7,6 +7,15 @@ from expression import Expression
 
 # Control table for postfix translation algorithm
 # See readable version in README.md
+# |   | # | ( | + | - | * | / | ) | ^ | % |
+# | # | 6 | 1 | 1 | 1 | 1 | 1 | 5 | 1 | 1 |
+# | ( | 5 | 1 | 1 | 1 | 1 | 1 | 3 | 1 | 1 |
+# | + | 4 | 1 | 2 | 2 | 1 | 1 | 4 | 1 | 1 |
+# | - | 4 | 1 | 2 | 2 | 1 | 1 | 4 | 1 | 1 |
+# | * | 4 | 1 | 4 | 4 | 2 | 2 | 4 | 1 | 2 |
+# | / | 4 | 1 | 4 | 4 | 2 | 2 | 4 | 1 | 2 |
+# | ^ | 4 | 1 | 4 | 4 | 4 | 4 | 4 | 1 | 4 |
+# | % | 4 | 1 | 4 | 4 | 2 | 2 | 4 | 1 | 2 |
 CONTROL_TABLE = {
     END: {
         END: "6",
@@ -116,8 +125,7 @@ class PostfixTranslator:
         postfix: AB+C*D-
 
     Attrs:
-        num_stack: stores numbers while translation.
-        opr_stack: stores operators while translation.
+        stack: stores operators while translation.
         postfix: the result postfix expression.
         expression: an `Expression` instance (input infix math expression).
         pointer: pointer (index number) to an expression.
@@ -128,8 +136,7 @@ class PostfixTranslator:
     """
 
     def __init__(self):
-        self.num_stack: deque = deque(END)
-        self.opr_stack: deque = deque(END)
+        self.stack: deque = deque(END)
         self.postfix: list = []
         self.expression: Exception = None
         self.pointer: int = 0
@@ -156,31 +163,30 @@ class PostfixTranslator:
                 self.pointer += 1
                 continue
             # Choose an operation
-            operation_code = CONTROL_TABLE[token][self.opr_stack[-1]]
+            operation_code = CONTROL_TABLE[token][self.stack[-1]]
             # Run operation (end of transltaion returns True)
             if self.operate(operation_code, token):
                 break
-        self.num_stack = deque(END)
-        self.opr_stack = deque(END)
+        self.stack = deque(END)
 
     def oper1(self, token: str) -> bool:
-        self.opr_stack.append(token)
+        self.stack.append(token)
         self.pointer += 1
         return False
 
     def oper2(self, token: str) -> bool:
-        self.postfix.append(self.opr_stack.pop())
-        self.opr_stack.append(token)
+        self.postfix.append(self.stack.pop())
+        self.stack.append(token)
         self.pointer += 1
         return False
 
     def oper3(self, token: str) -> bool:
-        self.opr_stack.pop()
+        self.stack.pop()
         self.pointer += 1
         return False
 
     def oper4(self, token: str) -> bool:
-        self.postfix.append(self.opr_stack.pop())
+        self.postfix.append(self.stack.pop())
         return False
 
     def oper5(self, token: str):
@@ -215,8 +221,14 @@ class PostfixTranslator:
         return " ".join(self.postfix)
 
     def __repr__(self):
-        return str(
-            "Expression:", self.expression, "|", "Postfix:", self.postfix
+        return " ".join(
+            [
+                "Expression:",
+                str(self.expression),
+                "|",
+                "Postfix:",
+                str(self.postfix),
+            ]
         )
 
 
@@ -225,7 +237,10 @@ class Calculator(PostfixTranslator):
 
     Calculation uses `num_stuck` and `postfix` and puts the result in `result`.
 
-    TODO: fix: (9/(5+4)
+    Attrs:
+        stack: stores numbers while calculation.
+        result: the result number of calclulations.
+        ...
     """
 
     def __init__(self):
@@ -240,7 +255,7 @@ class Calculator(PostfixTranslator):
 
     def clear(self):
         self.result = 0
-        self.num_stack = deque(END)
+        self.stack = deque(END)
 
     def _calc_result(self, left: str, right: str, operator: str) -> Decimal:
         left = Decimal(left)
@@ -267,16 +282,16 @@ class Calculator(PostfixTranslator):
         for token in postfix:
 
             if token[0].isdigit():
-                self.num_stack.append(token)
+                self.stack.append(token)
 
             elif token != END:
-                right = self.num_stack.pop()
-                left = self.num_stack.pop()
+                right = self.stack.pop()
+                left = self.stack.pop()
                 res = self._calc_result(left, right, token)
-                self.num_stack.append(res)
+                self.stack.append(res)
 
             elif token == END:
-                self.result = Decimal(self.num_stack.pop())
+                self.result = Decimal(self.stack.pop())
 
             else:
                 raise ValueError(f"Wrong token - `{token}`.")

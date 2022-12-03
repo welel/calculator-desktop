@@ -79,3 +79,7 @@
 1. Клонировать или скачать репозиторий.
 2. Создать [виртуальное окружение и установить зависимости](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) из `requirements.txt`.
 3. Выполнить файл `main.py`.
+
+# Скачать
+
+Для Linux: https://mega.nz/file/CZ4GBaaJ#Tie4eZYn8UnK7On3a6xdT81ai2bfVNdsCkMxqC5HCBk

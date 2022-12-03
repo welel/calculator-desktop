@@ -2,3 +2,7 @@ env/
 .vscode/
 __pycache__/
 .pytest_cache/
+dist/
+build/
+*.spec
+execs/

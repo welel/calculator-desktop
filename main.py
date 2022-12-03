@@ -88,6 +88,8 @@ class CalculatorWindow(QMainWindow):
             self.calc.calculate()
         except ValueError:
             self.ui.lbl_output.setText("Calculation error.")
+        except ZeroDivisionError:
+            self.ui.lbl_output.setText("Calculation error: division by 0.")
             return
         self.ui.lbl_output.setText(f"= {self.calc.get_result()}")
 
